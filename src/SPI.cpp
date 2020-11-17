@@ -561,6 +561,8 @@ void Write(u8 val, u32 hold)
 
         case 0x60:
             {
+                Platform::Mic_Prepare();
+                
                 if (MicBufferLen == 0)
                     ConvResult = 0x800;
                 else
