@@ -594,7 +594,12 @@ void CompileBlock(ARM* cpu)
     u32 r15 = cpu->R[15];
 
     u32 addressRanges[Config::JIT_MaxBlockSize];
+#ifdef __APPLE__
+    u32 addressMasks[Config::JIT_MaxBlockSize];
+    memset(addressMasks, 0, Config::JIT_MaxBlockSize);
+#else
     u32 addressMasks[Config::JIT_MaxBlockSize] = {0};
+#endif
     u32 numAddressRanges = 0;
 
     u32 numLiterals = 0;

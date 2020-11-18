@@ -5,6 +5,7 @@
 #else
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -21,8 +22,11 @@
 #include "Wifi.h"
 #include "NDSCart.h"
 #include "SPU.h"
+#include "Platform.h"
 
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 
 /*
     We're handling fastmem here.
@@ -143,6 +147,9 @@ static void SigsegvHandler(int sig, siginfo_t* info, void* rawContext)
 #ifdef __x86_64__
     desc.EmulatedFaultAddr = (u8*)info->si_addr - curArea;
     desc.FaultPC = context->uc_mcontext.gregs[REG_RIP];
+#elif defined(__APPLE__)
+    desc.EmulatedFaultAddr = (u8*)info->si_addr - curArea;
+    desc.FaultPC = context->uc_mcontext->__ss.__pc;
 #else
     desc.EmulatedFaultAddr = (u8*)context->uc_mcontext.fault_address - curArea;
     desc.FaultPC = context->uc_mcontext.pc;
@@ -153,6 +160,8 @@ static void SigsegvHandler(int sig, siginfo_t* info, void* rawContext)
     {
 #ifdef __x86_64__
         context->uc_mcontext.gregs[REG_RIP] += offset;
+#elif defined(__APPLE__)
+        context->uc_mcontext->__ss.__pc += offset;
 #else
         context->uc_mcontext.pc += offset;
 #endif
@@ -629,7 +638,18 @@ void Init()
 
     MemoryBase = (u8*)mmap(NULL, MemoryTotalSize, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
 
+#ifdef __APPLE__
+    MemoryFile = Platform::OpenLocalFile("melondsfastmem", "w+")->_file;
+    
+    char filepath[PATH_MAX];
+    if (fcntl(MemoryFile, F_GETPATH, filepath) != -1)
+    {
+        unlink(filepath);
+    }
+#else
     MemoryFile = memfd_create("melondsfastmem", 0);
+#endif
+
     ftruncate(MemoryFile, MemoryTotalSize);
 
     NewSa.sa_flags = SA_SIGINFO;
@@ -668,6 +688,8 @@ void DeInit()
     CloseHandle(MemoryFile);
 
     RemoveVectoredExceptionHandler(ExceptionHandlerHandle);
+#elif defined(__APPLE__)
+    munmap(MemoryBase, MemoryTotalSize);
 #endif
 }
 
