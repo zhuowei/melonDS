@@ -238,7 +238,7 @@ Compiler::Compiler()
     mprotect((void *)rwAddress, JitMemSize, PROT_READ | PROT_WRITE);
     
     vm_address_t rxAddress = virtualAddress;
-    mprotect((void *)rxAddress, JitMemSize, PROT_EXEC);
+    mprotect((void *)rxAddress, JitMemSize, Config::JIT_Enable ? PROT_EXEC : PROT_READ);
     
     SetCodeBase((u8 *)rwAddress, (u8 *)rxAddress);
     JitMemMainSize = JitMemSize;
