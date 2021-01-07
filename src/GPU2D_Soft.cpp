@@ -1,5 +1,6 @@
 #include "GPU2D.h"
 #include "GPU.h"
+#include "NDS.h"
 
 GPU2D_Soft::GPU2D_Soft(u32 num)
     : GPU2D(num)
@@ -152,6 +153,11 @@ u32 GPU2D_Soft::ColorComposite(int i, u32 val1, u32 val2)
 
 void GPU2D_Soft::DrawScanline(u32 line)
 {
+    if (NDS::SkipFrame)
+    {
+        return;
+    }
+    
     int stride = Accelerated ? (256*3 + 1) : 256;
     u32* dst = &Framebuffer[stride * line];
 

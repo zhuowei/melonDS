@@ -2100,6 +2100,18 @@ void VCount144()
 
 void RenderFrame()
 {
+    if (NDS::SkipFrame)
+    {
+        FrameIdentical = true;
+        
+        if (RenderThreadRunning)
+        {
+            Platform::Semaphore_Post(Sema_RenderStart);
+        }
+        
+        return;
+    }
+    
     auto textureDirty = GPU::VRAMDirty_Texture.DeriveState(GPU::VRAMMap_Texture);
     auto texPalDirty = GPU::VRAMDirty_TexPal.DeriveState(GPU::VRAMMap_TexPal);
 

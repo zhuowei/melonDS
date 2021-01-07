@@ -140,6 +140,8 @@ typedef struct
 extern int ConsoleType;
 extern int CurCPU;
 
+extern bool SkipFrame;
+
 extern u8 ARM9MemTimings[0x40000][4];
 extern u8 ARM7MemTimings[0x20000][4];
 
@@ -202,6 +204,8 @@ void SetupDirectBoot();
 void RelocateSave(const char* path, bool write);
 
 u32 RunFrame();
+
+void SetSkipFrame(bool skipFrame);
 
 void TouchScreen(u16 x, u16 y);
 void ReleaseScreen();
