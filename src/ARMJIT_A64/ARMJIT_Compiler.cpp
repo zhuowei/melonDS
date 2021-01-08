@@ -1,5 +1,11 @@
+#include "ARMJIT_Compiler.h"
+
+#include "../ARMJIT_Internal.h"
+#include "../ARMInterpreter.h"
+#include "../Config.h"
+
 #ifdef __SWITCH__
-#include "../switch/compat_switch.h"
+#include <switch.h>
 
 extern char __start__;
 #else
@@ -7,25 +13,15 @@ extern char __start__;
 #include <unistd.h>
 #endif
 
-#include "ARMJIT_Compiler.h"
-
-#include "../ARMJIT_Internal.h"
-#include "../ARMInterpreter.h"
-#include "../Config.h"
+#include <stdlib.h>
 
 #ifdef __APPLE__
 #include <mach/mach.h>
-#else
-#include <malloc.h>
 #endif
 
 using namespace Arm64Gen;
 
-#ifdef __APPLE__
-extern "C" void ARM_Ret() asm ("ARM_Ret");
-#else
-extern "C" void ARM_Ret()
-#endif
+extern "C" void ARM_Ret();
 
 namespace ARMJIT
 {
@@ -74,6 +70,11 @@ void Compiler::A_Comp_MRS()
     }
     else
         MOV(rd, RCPSR);
+}
+
+void UpdateModeTrampoline(ARM* arm, u32 oldmode, u32 newmode)
+{
+    arm->UpdateMode(oldmode, newmode);
 }
 
 void Compiler::A_Comp_MSR()
@@ -147,11 +148,7 @@ void Compiler::A_Comp_MSR()
 
             PushRegs(true);
 
-#ifdef __APPLE__
-            QuickCallFunction(X3, &ARM::UpdateMode);
-#else
-            QuickCallFunction(X3, (void*)&ARM::UpdateMode);
-#endif
+            QuickCallFunction(X3, (void*)&UpdateModeTrampoline);
         
             PopRegs(true);
         }
@@ -191,7 +188,7 @@ void Compiler::PopRegs(bool saveHiRegs)
 Compiler::Compiler()
 {
 #ifdef __SWITCH__
-    JitRWBase = memalign(0x1000, JitMemSize);
+    JitRWBase = aligned_alloc(0x1000, JitMemSize);
 
     JitRXStart = (u8*)&__start__ - JitMemSize - 0x1000;
     JitRWStart = virtmemReserve(JitMemSize);
@@ -223,7 +220,7 @@ Compiler::Compiler()
 
     SetCodeBase((u8*)JitRWStart, (u8*)JitRXStart);
     JitMemMainSize = JitMemSize;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
     vm_address_t baseAddress = NULL;
     vm_allocate(mach_task_self(), &baseAddress, JitMemSize * 2, VM_FLAGS_ANYWHERE);
     

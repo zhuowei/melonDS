@@ -2,7 +2,7 @@
 <h2 align="center"><b>melonDS</b></h2>
 <p align="center">
 <a href="http://melonds.kuribo64.net/" alt="melonDS website"><img src="https://img.shields.io/badge/website-melonds.kuribo64.net-%2331352e.svg"></a>
-<a href="http://melonds.kuribo64.net/downloads.php" alt="Release: 0.9"><img src="https://img.shields.io/badge/release-0.9-%235c913b.svg"></a>
+<a href="http://melonds.kuribo64.net/downloads.php" alt="Release: 0.9.1"><img src="https://img.shields.io/badge/release-0.9.1-%235c913b.svg"></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0" alt="License: GPLv3"><img src="https://img.shields.io/badge/License-GPL%20v3-%23ff554d.svg"></a>
 <a href="https://kiwiirc.com/client/irc.badnik.net/?nick=IRC-Source_?#melonds" alt="IRC channel: #melonds"><img src="https://img.shields.io/badge/IRC%20chat-%23melonds-%23dd2e44.svg"></a>
 </p>
@@ -38,7 +38,7 @@ As for the rest, the interface should be pretty straightforward. If you have a q
 * Install dependencies:
 
 ```sh
-sudo apt-get install cmake libgtk-3-dev libcurl4-gnutls-dev libpcap0.8-dev libsdl2-dev qtbase5-dev qtdeclarative5-dev libslirp-dev
+sudo apt-get install cmake libcurl4-gnutls-dev libpcap0.8-dev libsdl2-dev qtbase5-dev qtdeclarative5-dev libslirp-dev
 ```
 
 * Compile:
@@ -84,6 +84,21 @@ If everything went well, melonDS and the libraries it needs should now be in the
    ```
 If everything went well, melonDS should now be in the `dist` folder.
 
+### macOS:
+1. Install the [Homebrew Package Manager](https://brew.sh)
+2. Install dependencies: `brew install git pkg-config cmake sdl2 qt5 libslirp`
+3. Compile:
+   ```zsh
+   git clone https://github.com/Arisotura/melonDS.git
+   cd melonDS
+   mkdir build && cd build
+   cmake .. -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5
+   make -j$(sysctl -n hw.ncpu)
+   mkdir dist && cp -r melonDS.app dist
+   ```
+If everything went well, melonDS.app should now be in the `dist` folder.
+
+   
 ## TODO LIST
 
  * DSi emulation

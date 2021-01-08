@@ -9,6 +9,10 @@
 #include "../ARMJIT_Internal.h"
 #include "../ARMJIT_RegisterCache.h"
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 #include <unordered_map>
 
 namespace ARMJIT
@@ -187,6 +191,7 @@ public:
     void Comp_RegShiftReg(int op, bool S, Op2& op2, Arm64Gen::ARM64Reg rs);
 
     bool Comp_MemLoadLiteral(int size, bool signExtend, int rd, u32 addr);
+
     enum
     {
         memop_Writeback = 1 << 0,
@@ -213,8 +218,8 @@ public:
         return (u8*)entry - GetRXBase();
     }
 
-    bool IsJITFault(u64 pc);
-    s64 RewriteMemAccess(u64 pc);
+    bool IsJITFault(u8* pc);
+    u8* RewriteMemAccess(u8* pc);
 
     void SwapCodeRegion()
     {
@@ -257,7 +262,7 @@ public:
 
     bool IrregularCycles = false;
 
-#if defined(__SWITCH__) || defined(__APPLE__)
+#if defined(__SWITCH__) || (defined(__APPLE__) && TARGET_OS_IPHONE)
     void* JitRWBase;
     void* JitRWStart;
     void* JitRXStart;

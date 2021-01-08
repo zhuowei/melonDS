@@ -924,12 +924,7 @@ public:
   template <typename T>
   void QuickCallFunction(ARM64Reg scratchreg, T func)
   {
-#ifdef __APPLE__
-    const void **pointer = (const void **)&func;
-    QuickCallFunction(scratchreg, *pointer);
-#else
     QuickCallFunction(scratchreg, (const void*)func);
-#endif
   }
 };
 

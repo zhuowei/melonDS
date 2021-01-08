@@ -32,10 +32,6 @@ bool SetupExecutableRegion(u32 num, u32 blockAddr, u64*& entry, u32& start, u32&
 
 }
 
-#ifdef __APPLE__
-extern "C" void ARM_Dispatch(ARM* cpu, ARMJIT::JitBlockEntry entry) asm ("ARM_Dispatch");
-#else
 extern "C" void ARM_Dispatch(ARM* cpu, ARMJIT::JitBlockEntry entry);
-#endif
 
 #endif
