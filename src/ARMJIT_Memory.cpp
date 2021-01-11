@@ -30,6 +30,7 @@
 #include "NDSCart.h"
 #include "SPU.h"
 #include "Platform.h"
+#include "Config.h"
 
 #include <stdlib.h>
 
@@ -718,11 +719,18 @@ void Init()
     // The idea was to give the OS more freedom where to position the buffers, 
     // but something was bad about this so instead we take this vmem eating monster
     // which seems to work better.
-    MemoryBase = (u8*)mmap(NULL, AddrSpaceSize*4, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
-    munmap(MemoryBase, AddrSpaceSize*4);
-    FastMem9Start = MemoryBase;
-    FastMem7Start = MemoryBase + AddrSpaceSize;
-    MemoryBase = MemoryBase + AddrSpaceSize*2;
+    if (Config::JIT_FastMemory)
+    {
+        MemoryBase = (u8*)mmap(NULL, AddrSpaceSize*4, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+        munmap(MemoryBase, AddrSpaceSize*4);
+        FastMem9Start = MemoryBase;
+        FastMem7Start = MemoryBase + AddrSpaceSize;
+        MemoryBase = MemoryBase + AddrSpaceSize*2;
+    }
+    else
+    {
+        MemoryBase = (u8*)mmap(NULL, MemoryTotalSize, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    }
 
 #if defined(__ANDROID__)
     static void* libandroid = dlopen("libandroid.so", RTLD_LAZY | RTLD_LOCAL);
