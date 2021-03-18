@@ -24,6 +24,7 @@
 #include "FIFO.h"
 #include "Config.h"
 
+#include "MelonRipper.h"
 
 // 3D engine notes
 //
@@ -1041,6 +1042,10 @@ void SubmitPolygon()
     v2 = &TempVertexBuffer[2];
     v3 = &TempVertexBuffer[3];
 
+    if (MelonRipper::IsDumping) {
+        MelonRipper::Polygon(TempVertexBuffer, nverts);
+    }
+
     normalX = ((s64)(v0->Position[1]-v1->Position[1]) * (v2->Position[3]-v1->Position[3]))
         - ((s64)(v0->Position[3]-v1->Position[3]) * (v2->Position[1]-v1->Position[1]));
     normalY = ((s64)(v0->Position[3]-v1->Position[3]) * (v2->Position[0]-v1->Position[0]))
@@ -1420,6 +1425,12 @@ void SubmitVertex()
 {
     s64 vertex[4] = {(s64)CurVertex[0], (s64)CurVertex[1], (s64)CurVertex[2], 0x1000};
     Vertex* vertextrans = &TempVertexBuffer[VertexNumInPoly];
+
+    if (MelonRipper::IsDumping) {
+        vertextrans->WorldPosition[0] = (vertex[0]*PosMatrix[0] + vertex[1]*PosMatrix[4] + vertex[2]*PosMatrix[8] + vertex[3]*PosMatrix[12]) >> 12;
+        vertextrans->WorldPosition[1] = (vertex[0]*PosMatrix[1] + vertex[1]*PosMatrix[5] + vertex[2]*PosMatrix[9] + vertex[3]*PosMatrix[13]) >> 12;
+        vertextrans->WorldPosition[2] = (vertex[0]*PosMatrix[2] + vertex[1]*PosMatrix[6] + vertex[2]*PosMatrix[10] + vertex[3]*PosMatrix[14]) >> 12;
+    }
 
     UpdateClipMatrix();
     vertextrans->Position[0] = (vertex[0]*ClipMatrix[0] + vertex[1]*ClipMatrix[4] + vertex[2]*ClipMatrix[8] + vertex[3]*ClipMatrix[12]) >> 12;
@@ -2058,16 +2069,19 @@ void ExecuteCommand()
         case 0x29: // polygon attributes
             VertexPipelineCmdDelayed8();
             PolygonAttr = entry.Param;
+            if (MelonRipper::IsDumping) MelonRipper::PolygonAttr(PolygonAttr);
             break;
 
         case 0x2A: // texture param
             VertexPipelineCmdDelayed8();
             TexParam = entry.Param;
+            if (MelonRipper::IsDumping) MelonRipper::TexParam(TexParam);
             break;
 
         case 0x2B: // texture palette
             VertexPipelineCmdDelayed8();
             TexPalette = entry.Param & 0x1FFF;
+            if (MelonRipper::IsDumping) MelonRipper::TexPalette(TexPalette);
             break;
 
         case 0x30: // diffuse/ambient material
@@ -2158,7 +2172,7 @@ void ExecuteCommand()
             VertexSlotCounter = 0;
             VertexSlotsFree = 1;
             break;
-        
+
         case 0x60: // viewport x1,y1,x2,y2
             VertexPipelineCmdDelayed8();
             // note: viewport Y coordinates are upside-down
@@ -2407,7 +2421,7 @@ void ExecuteCommand()
                     CurVertex[2] = ExecParams[1] & 0xFFFF;
                     PosTest();
                     break;
-                
+
                 case 0x70: // box test
                     NumTestCommands -= 3;
                     BoxTest(ExecParams);
@@ -2578,6 +2592,11 @@ void VBlank()
 
             RenderClearAttr1 = ClearAttr1;
             RenderClearAttr2 = ClearAttr2;
+        }
+
+        if (FlushRequest) {
+            MelonRipper::FinishFrame();
+            MelonRipper::StartFrame();
         }
 
         if (FlushRequest)

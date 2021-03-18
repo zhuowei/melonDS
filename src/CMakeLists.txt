@@ -47,6 +47,8 @@ add_library(core STATIC
 
 	tiny-AES-c/aes.c
 	xxhash/xxhash.c
+
+	MelonRipper.cpp
 )
 
 if (ENABLE_OGLRENDERER)

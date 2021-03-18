@@ -46,6 +46,8 @@ struct Vertex
     // TODO maybe: hi-res color? (that survives clipping)
     s32 HiresPosition[2];
 
+    // used by MelonRipper
+    s32 WorldPosition[3];
 };
 
 struct Polygon
@@ -147,7 +149,7 @@ public:
 
     // This "Accelerated" flag currently communicates if the framebuffer should
     // be allocated differently and other little misc handlers. Ideally there
-    // are more detailed "traits" that we can ask of the Renderer3D type 
+    // are more detailed "traits" that we can ask of the Renderer3D type
     const bool Accelerated;
 
     virtual void SetRenderSettings(GPU::RenderSettings& settings) = 0;
