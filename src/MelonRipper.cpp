@@ -32,6 +32,8 @@ static void DumpU16(u16 x) {
 }
 
 static void DumpVRAM();
+static void DumpDispCnt();
+static void DumpToonTable();
 
 static void WriteDumpFile(const char* filename) {
     bool ok = false;
@@ -65,7 +67,7 @@ void StartFrame() {
     DumpFile.clear();
     DumpFile.reserve(2*1024*1024);
     const char magic[24] = {
-        'm','e','l','o','n',' ','r','i','p','p','e','r',' ','v','1'
+        'm','e','l','o','n',' ','r','i','p','p','e','r',' ','v','2'
     };
     DumpFile.insert(DumpFile.begin(), &magic[0], &magic[sizeof(magic)]);
 }
@@ -74,6 +76,8 @@ void FinishFrame() {
     if (!IsDumping) return;
 
     DumpVRAM();
+    DumpDispCnt();
+    DumpToonTable();
 
     // Write to a file in the cur dir with the time in the name
     char filename[96] = {};
@@ -135,6 +139,18 @@ void DumpVRAM() {
     DUMP_BANK(VRAM_F);
     DUMP_BANK(VRAM_G);
 #undef DUMP_BANK
+}
+
+void DumpDispCnt() {
+    DumpOp("DISP");
+    DumpU32(GPU3D::RenderDispCnt);
+}
+
+void DumpToonTable() {
+    DumpOp("TOON");
+    for (int i = 0; i != 32; ++i) {
+        DumpU16(GPU3D::RenderToonTable[i]);
+    }
 }
 
 }
