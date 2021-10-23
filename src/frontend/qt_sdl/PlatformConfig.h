@@ -33,6 +33,7 @@ enum
     HK_SwapScreens,
     HK_SolarSensorDecrease,
     HK_SolarSensorIncrease,
+    HK_FrameStep,
     HK_RipFrame,  // MelonRipper
     HK_MAX
 };
@@ -85,6 +86,7 @@ extern int DirectLAN;
 
 extern int SavestateRelocSRAM;
 
+extern int AudioInterp;
 extern int AudioVolume;
 extern int MicInputType;
 extern char MicWavPath[1024];

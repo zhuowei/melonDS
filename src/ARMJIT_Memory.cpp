@@ -1,3 +1,21 @@
+/*
+    Copyright 2016-2021 Arisotura, RSDuck
+
+    This file is part of melonDS.
+
+    melonDS is free software: you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the Free
+    Software Foundation, either version 3 of the License, or (at your option)
+    any later version.
+
+    melonDS is distributed in the hope that it will be useful, but WITHOUT ANY
+    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with melonDS. If not, see http://www.gnu.org/licenses/.
+*/
+
 #if defined(__SWITCH__)
 #include <switch.h>
 #elif defined(_WIN32)
@@ -566,7 +584,7 @@ bool MapAtAddress(u32 addr)
         return false;
 
     u8* states = num == 0 ? MappingStatus9 : MappingStatus7;
-    printf("mapping mirror %x, %x %x %d %d\n", mirrorStart, mirrorSize, memoryOffset, region, num);
+    //printf("mapping mirror %x, %x %x %d %d\n", mirrorStart, mirrorSize, memoryOffset, region, num);
     bool isExecutable = ARMJIT::CodeMemRegions[region];
 
     u32 dtcmStart = NDS::ARM9->DTCMBase;
@@ -632,7 +650,7 @@ bool MapAtAddress(u32 addr)
 #if defined(__SWITCH__)
             if (!hasCode)
             {
-                printf("trying to map %x (size: %x) from %x\n", mirrorStart + sectionOffset, sectionSize, sectionOffset + memoryOffset + OffsetsPerRegion[region]);
+                //printf("trying to map %x (size: %x) from %x\n", mirrorStart + sectionOffset, sectionSize, sectionOffset + memoryOffset + OffsetsPerRegion[region]);
                 bool succeded = MapIntoRange(mirrorStart + sectionOffset, num, sectionOffset + memoryOffset + OffsetsPerRegion[region], sectionSize);
                 assert(succeded);
             }
@@ -821,7 +839,7 @@ void Reset()
         Mappings[region].Clear();
     }
 
-    for (int i = 0; i < sizeof(MappingStatus9); i++)
+    for (size_t i = 0; i < sizeof(MappingStatus9); i++)
     {
         assert(MappingStatus9[i] == memstate_Unmapped);
         assert(MappingStatus7[i] == memstate_Unmapped);

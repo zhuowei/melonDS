@@ -1,3 +1,21 @@
+/*
+    Copyright 2016-2021 Arisotura, RSDuck
+
+    This file is part of melonDS.
+
+    melonDS is free software: you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the Free
+    Software Foundation, either version 3 of the License, or (at your option)
+    any later version.
+
+    melonDS is distributed in the hope that it will be useful, but WITHOUT ANY
+    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with melonDS. If not, see http://www.gnu.org/licenses/.
+*/
+
 #ifndef NONSTUPIDBITFIELD_H
 #define NONSTUPIDBITFIELD_H
 
@@ -148,7 +166,7 @@ struct NonStupidBitField
     void SetRange(u32 startBit, u32 bitsCount)
     {
         u32 startEntry = startBit >> 6;
-        u64 entriesCount = ((startBit + bitsCount + 0x3F & ~0x3F) >> 6) - startEntry;
+        u64 entriesCount = (((startBit + bitsCount + 0x3F) & ~0x3F) >> 6) - startEntry;
 
         if (entriesCount > 1)
         {
@@ -157,7 +175,7 @@ struct NonStupidBitField
                 Data[startEntry + entriesCount - 1] |= ~(0xFFFFFFFFFFFFFFFF << ((startBit + bitsCount) & 0x3F));
             else
                 Data[startEntry + entriesCount - 1] = 0xFFFFFFFFFFFFFFFF;
-            for (int i = startEntry + 1; i < startEntry + entriesCount - 1; i++)
+            for (u64 i = startEntry + 1; i < startEntry + entriesCount - 1; i++)
                 Data[i] = 0xFFFFFFFFFFFFFFFF;
         }
         else

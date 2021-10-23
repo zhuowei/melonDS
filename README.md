@@ -1,15 +1,16 @@
-<p align="center"><img src="https://raw.githubusercontent.com/StapleButter/melonDS/master/icon/melon_128x128.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Arisotura/melonDS/master/res/icon/melon_128x128.png"></p>
 <h2 align="center"><b>melonDS</b></h2>
 <p align="center">
 <a href="http://melonds.kuribo64.net/" alt="melonDS website"><img src="https://img.shields.io/badge/website-melonds.kuribo64.net-%2331352e.svg"></a>
-<a href="http://melonds.kuribo64.net/downloads.php" alt="Release: 0.9.1"><img src="https://img.shields.io/badge/release-0.9.1-%235c913b.svg"></a>
+<a href="http://melonds.kuribo64.net/downloads.php" alt="Release: 0.9.3"><img src="https://img.shields.io/badge/release-0.9.3-%235c913b.svg"></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0" alt="License: GPLv3"><img src="https://img.shields.io/badge/License-GPL%20v3-%23ff554d.svg"></a>
 <a href="https://kiwiirc.com/client/irc.badnik.net/?nick=IRC-Source_?#melonds" alt="IRC channel: #melonds"><img src="https://img.shields.io/badge/IRC%20chat-%23melonds-%23dd2e44.svg"></a>
 <br>
 <a href="https://github.com/Arisotura/melonDS/actions?query=workflow%3A%22CMake+Build+%28Windows+x86-64%29%22+event%3Apush"><img src="https://img.shields.io/github/workflow/status/Arisotura/melonDS/CMake%20Build%20(Windows%20x86-64)?label=Windows%20x86-64&logo=GitHub"></img></a>
 <a href="https://github.com/Arisotura/melonDS/actions?query=workflow%3A%22CMake+Build+%28Ubuntu+x86-64%29%22+event%3Apush"><img src="https://img.shields.io/github/workflow/status/Arisotura/melonDS/CMake%20Build%20(Ubuntu%20x86-64)?label=Linux%20x86-64&logo=GitHub"></img></a>
-<a href="https://github.com/Arisotura/melonDS/actions?query=workflow%3A%22CMake+Build+%28macOS+x86-64%29%22+event%3Apush"><img src="https://img.shields.io/github/workflow/status/Arisotura/melonDS/CMake%20Build%20(macOS%20x86-64)?label=macOS%20x86-64&logo=GitHub"></img></a>
 <a href="https://github.com/Arisotura/melonDS/actions?query=workflow%3A%22CMake+Build+%28Ubuntu+aarch64%29%22+event%3Apush"><img src="https://img.shields.io/github/workflow/status/Arisotura/melonDS/CMake%20Build%20(Ubuntu%20aarch64)?label=Linux%20ARM64&logo=GitHub"></img></a>
+<a href="https://dev.azure.com/melonDS/melonDS/_build?definitionId=1&repositoryFilter=1&branchFilter=2%2C2%2C2%2C2%2C2%2C2%2C2%2C2%2C2%2C2%2C2%2C2%2C2"><img src="https://img.shields.io/azure-devops/build/melonDS/7c9c08a1-669f-42a4-bef4-a6c74eadf723/1/master?label=macOS%20x86-64&logo=Azure%20Pipelines"></img></a>
+<a href="https://dev.azure.com/melonDS/melonDS/_build?definitionId=2&_a=summary&repositoryFilter=1&branchFilter=2%2C2%2C2%2C2%2C2"><img src="https://img.shields.io/azure-devops/build/melonDS/7c9c08a1-669f-42a4-bef4-a6c74eadf723/2/master?label=macOS%20ARM64&logo=Azure%20Pipelines"></img></a>
 </p>
 DS emulator, sorta
 
@@ -49,8 +50,6 @@ As for the rest, the interface should be pretty straightforward. If you have a q
   ```
 3. Compile:
   ```bash
-  mkdir -p build
-  cd build
   cmake ..
   make -j$(nproc --all)
   ```
@@ -72,7 +71,7 @@ As for the rest, the interface should be pretty straightforward. If you have a q
    ```bash
    cmake .. -G "MSYS Makefiles"
    make -j$(nproc --all)
-   ../msys-dist.sh
+   ../tools/msys-dist.sh
    ```
 If everything went well, melonDS and the libraries it needs should now be in the `dist` folder.
 
@@ -88,7 +87,7 @@ If everything went well, melonDS should now be in the `dist` folder.
 
 ### macOS:
 1. Install the [Homebrew Package Manager](https://brew.sh)
-2. Install dependencies: `brew install git pkg-config cmake sdl2 qt@5 libslirp libarchive libepoxy`
+2. Install dependencies: `brew install git pkg-config cmake sdl2 qt@6 libslirp libarchive libepoxy`
 3. Download the melonDS repository and prepare:
   ```zsh
   git clone https://github.com/Arisotura/melonDS
@@ -97,11 +96,10 @@ If everything went well, melonDS should now be in the `dist` folder.
   ```
 4. Compile:
    ```zsh
-   cmake .. -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5
-   make -j$(sysctl -n hw.ncpu)
-   mkdir dist && cp -r melonDS.app dist
+   cmake .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt@6);$(brew --prefix libarchive)" -DUSE_QT6=ON -DMACOS_BUNDLE_LIBS=ON
+   make -j$(sysctl -n hw.logicalcpu)
    ```
-If everything went well, melonDS.app should now be in the `dist` folder.
+If everything went well, melonDS.app should now be in the current directory.
 
    
 ## TODO LIST
@@ -128,10 +126,14 @@ If everything went well, melonDS.app should now be in the `dist` folder.
  * limittox for the icon
  * All of you comrades who have been testing melonDS, reporting issues, suggesting shit, etc
 
-## License
+## Licenses
+
 [![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl-3.0.en.html)
 
 melonDS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
+
+### External
+* Images used in the Input Config Dialog - see `src/frontend/qt_sdl/InputConfig/resources/LICENSE.md`
