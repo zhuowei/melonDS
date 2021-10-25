@@ -4,7 +4,9 @@ namespace MelonRipper {
 
 extern bool IsDumping;
 
-void ScheduleDumpForNextFrame();
+void RequestRip(unsigned nframes = 1);
+
+// Notifications when stuff happens
 void StartFrame();
 void FinishFrame();
 void Polygon(GPU3D::Vertex verts[4], int nverts);

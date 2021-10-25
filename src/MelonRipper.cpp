@@ -9,8 +9,16 @@
 namespace MelonRipper {
 
 bool IsDumping = false;
-static bool IsScheduled = false;
 static std::vector<u8> DumpFile;
+
+// Counter for frames dumped so far
+static unsigned FrameCntr = 0;
+
+// Total number of frames to dump
+static unsigned TotRequestedFrames = 0;
+
+// String with the time the rip started (for filename)
+char TimeStr[64];
 
 static void DumpOp(const char* s) {
     DumpFile.push_back(s[0]);
@@ -52,13 +60,16 @@ static void WriteDumpFile(const char* filename) {
     }
 }
 
-void ScheduleDumpForNextFrame() {
-    IsScheduled = true;
+void RequestRip(unsigned nframes) {
+    if (TotRequestedFrames) {
+        // Already doing a rip, ignore request
+        return;
+    }
+    TotRequestedFrames = nframes;
 }
 
 void StartFrame() {
-    if (IsScheduled) {
-        IsScheduled = false;
+    if (FrameCntr < TotRequestedFrames) {
         IsDumping = true;
     }
 
@@ -66,9 +77,7 @@ void StartFrame() {
 
     DumpFile.clear();
     DumpFile.reserve(2*1024*1024);
-    const char magic[24] = {
-        'm','e','l','o','n',' ','r','i','p','p','e','r',' ','v','2'
-    };
+    const char magic[24] = "melon ripper v2";
     DumpFile.insert(DumpFile.begin(), &magic[0], &magic[sizeof(magic)]);
 }
 
@@ -79,20 +88,35 @@ void FinishFrame() {
     DumpDispCnt();
     DumpToonTable();
 
-    // Write to a file in the cur dir with the time in the name
+    // Format time on the first frame of the rip
+    if (FrameCntr == 0) {
+        time_t t;
+        struct tm *tmp;
+        t = time(nullptr);
+        tmp = localtime(&t);
+        if (!tmp || !strftime(TimeStr, sizeof(TimeStr), "%Y-%m-%d-%H-%M-%S", tmp)) {
+            strcpy(TimeStr, "");  // fallback
+        }
+    }
+
+    // Write to a file with the time in the name
     char filename[96] = {};
-    time_t t;
-    struct tm *tmp;
-    t = time(nullptr);
-    tmp = localtime(&t);
-    if (!tmp || !strftime(filename, sizeof(filename), "melonrip-%Y-%m-%d-%H-%M-%S.dump", tmp)) {
-        strcpy(filename, "melonrip.dump"); // fallback
+    if (TotRequestedFrames == 1) {
+        snprintf(filename, sizeof(filename), "melonrip-%s.dump", TimeStr);
+    } else {
+        snprintf(filename, sizeof(filename), "melonrip-%s_f%d.dump", TimeStr, FrameCntr+1);
     }
 
     WriteDumpFile(filename);
 
     IsDumping = false;
     DumpFile.clear();
+
+    ++FrameCntr;
+    if (FrameCntr == TotRequestedFrames) {
+        // Done
+        FrameCntr = TotRequestedFrames = 0;
+    }
 }
 
 void Polygon(GPU3D::Vertex verts[4], int nverts) {
