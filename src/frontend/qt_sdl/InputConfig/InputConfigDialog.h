@@ -66,7 +66,7 @@ private:
     Ui::InputConfigDialog* ui;
 
     int keypadKeyMap[12],   keypadJoyMap[12];
-    int addonsKeyMap[3],    addonsJoyMap[3];
+    int addonsKeyMap[4],    addonsJoyMap[4];
     int hkGeneralKeyMap[9], hkGeneralJoyMap[9];
 };
 

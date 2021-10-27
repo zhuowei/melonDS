@@ -433,6 +433,7 @@ void EmuThread::run()
         if (Input::HotkeyPressed(HK_SwapScreens)) emit swapScreensToggle();
 
         if (Input::HotkeyPressed(HK_RipFrame)) MelonRipper::RequestRip();
+        if (Input::HotkeyPressed(HK_RipFrameX5)) MelonRipper::RequestRip(5);
 
         if (Input::HotkeyPressed(HK_SolarSensorDecrease))
         {

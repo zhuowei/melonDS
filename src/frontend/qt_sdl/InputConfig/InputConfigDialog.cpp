@@ -44,6 +44,7 @@ const int hk_addons[] =
     HK_SolarSensorDecrease,
     // MelonRipper
     HK_RipFrame,
+    HK_RipFrameX5,
 };
 
 const char* hk_addons_labels[] =
@@ -52,6 +53,7 @@ const char* hk_addons_labels[] =
     "[Boktai] Sunlight - ",
     // MelonRipper
     "[MelonRipper] Rip ",
+    "[MelonRipper] Rip x5",
 };
 
 const int hk_general[] =
@@ -81,7 +83,7 @@ const char* hk_general_labels[] =
 };
 
 const int keypad_num = 12;
-const int hk_addons_num = 3;
+const int hk_addons_num = 4;
 const int hk_general_num = 9;
 
 

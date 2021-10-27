@@ -34,7 +34,9 @@ enum
     HK_SolarSensorDecrease,
     HK_SolarSensorIncrease,
     HK_FrameStep,
-    HK_RipFrame,  // MelonRipper
+    // MelonRipper
+    HK_RipFrame,
+    HK_RipFrameX5,
     HK_MAX
 };
 

@@ -128,6 +128,7 @@ ConfigEntry PlatformConfigFile[] =
     {"HKKey_FrameStep",           0, &HKKeyMapping[HK_FrameStep],           -1, NULL, 0},
     // MelonRipper
     {"HKKey_RipFrame",            0, &HKKeyMapping[HK_RipFrame],            -1, NULL, 0},
+    {"HKKey_RipFrameX5",          0, &HKKeyMapping[HK_RipFrameX5],          -1, NULL, 0},
 
     {"HKJoy_Lid",                 0, &HKJoyMapping[HK_Lid],                 -1, NULL, 0},
     {"HKJoy_Mic",                 0, &HKJoyMapping[HK_Mic],                 -1, NULL, 0},
@@ -142,6 +143,7 @@ ConfigEntry PlatformConfigFile[] =
     {"HKJoy_FrameStep",           0, &HKJoyMapping[HK_FrameStep],           -1, NULL, 0},
     // MelonRipper
     {"HKJoy_RipFrame",            0, &HKJoyMapping[HK_RipFrame],            -1, NULL, 0},
+    {"HKJoy_RipFrameX5",          0, &HKJoyMapping[HK_RipFrameX5],          -1, NULL, 0},
 
     {"JoystickID", 0, &JoystickID, 0, NULL, 0},
 
