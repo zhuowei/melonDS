@@ -2600,11 +2600,6 @@ void VBlank()
             RenderClearAttr2 = ClearAttr2;
         }
 
-        if (FlushRequest) {
-            MelonRipper::FinishFrame();
-            MelonRipper::StartFrame();
-        }
-
         if (FlushRequest)
         {
             CurRAMBank = CurRAMBank?0:1;
@@ -2616,12 +2611,16 @@ void VBlank()
             NumOpaquePolygons = 0;
 
             FlushRequest = 0;
+
+            MelonRipper::FlushRequest();
         }
     }
 }
 
 void VCount215()
 {
+    MelonRipper::RenderFrame();
+
     CurrentRenderer->RenderFrame();
 }
 

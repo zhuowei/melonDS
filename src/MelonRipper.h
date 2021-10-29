@@ -7,8 +7,8 @@ extern bool IsDumping;
 void RequestRip(unsigned nframes = 1);
 
 // Notifications when stuff happens
-void StartFrame();
-void FinishFrame();
+void FlushRequest();
+void RenderFrame();
 void Polygon(GPU3D::Vertex verts[4], int nverts);
 void TexParam(u32);
 void TexPalette(u32);
