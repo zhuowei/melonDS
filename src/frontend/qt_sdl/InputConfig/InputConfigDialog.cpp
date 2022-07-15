@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2021 Arisotura
+    Copyright 2016-2022 melonDS team
 
     This file is part of melonDS.
 
@@ -25,7 +25,6 @@
 
 #include "types.h"
 #include "Config.h"
-#include "PlatformConfig.h"
 
 #include "MapButton.h"
 #include "Input.h"
@@ -42,6 +41,7 @@ const int hk_addons[] =
 {
     HK_SolarSensorIncrease,
     HK_SolarSensorDecrease,
+
     // MelonRipper
     HK_RipFrame,
     HK_RipFrameX5,
@@ -51,6 +51,7 @@ const char* hk_addons_labels[] =
 {
     "[Boktai] Sunlight + ",
     "[Boktai] Sunlight - ",
+
     // MelonRipper
     "[MelonRipper] Rip ",
     "[MelonRipper] Rip x5",
@@ -76,7 +77,7 @@ const char* hk_general_labels[] =
     "Frame step",
     "Fast forward",
     "Toggle FPS limit",
-    "Toggle Fullscreen",
+    "Toggle fullscreen",
     "Close/open lid",
     "Microphone",
     "Swap screens"
