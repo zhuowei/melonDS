@@ -5,6 +5,7 @@
 #include "types.h"
 #include "GPU.h"
 #include "MelonRipper.h"
+#include "NDSCart.h"
 
 namespace MelonRipper {
 
@@ -166,16 +167,39 @@ void PolygonAttr(u32 attr)
     CurRip.WritePolygonAttr(attr);
 }
 
+char ConvertToFilenameChar(char c)
+{
+    if (('0' <= c && c <= '9') || ('a' <= c && c <= 'z'))
+        return c;
+    if ('A' <= c && c <= 'Z')
+        return c - 'A' + 'a';
+    return 0;
+}
+
 void InitRequestFilename()
 {
-    char buf[96];
+    std::string& s = CurRequest.filename_base;
+    s.clear();
+
+    // <GameTitle>
+    for (int i = 0; i != 12; ++i) {
+        char c = NDSCart::Header.GameTitle[i];
+        c = ConvertToFilenameChar(c);
+        if (c) s.push_back(c);
+    }
+
+    // Fallback if empty for some reason
+    if (s.empty())
+        s = "melonrip";
+
+    // -YYYY-MM-DD-HH-MM-SS
     time_t t;
     struct tm *tmp;
     t = time(nullptr);
     tmp = localtime(&t);
-    strftime(buf, sizeof(buf), "melonrip-%Y-%m-%d-%H-%M-%S", tmp);
-
-    CurRequest.filename_base = buf;
+    char buf[32];
+    strftime(buf, sizeof(buf), "-%Y-%m-%d-%H-%M-%S", tmp);
+    s += buf;
 }
 
 void InitRipFilename()
