@@ -62,12 +62,6 @@ jobs:
           Windows 64-bit EXE.
 
 
-          Remember, melonDS also needs
-          [three firmware files](https://github.com/scurest/melonDS/tree/MelonRipper#how-to-use)
-          to run games!
-          Configure the location under _Config > Emu Settings_.
-
-
           NOTE:
           This is *not* an official melonDS build.
           It's based on an older melonDS release,
