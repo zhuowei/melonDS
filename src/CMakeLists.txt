@@ -48,6 +48,8 @@ add_library(core STATIC
     Wifi.cpp
     WifiAP.cpp
 
+    MelonRipper.cpp
+
     fatfs/diskio.c
     fatfs/ff.c
     fatfs/ffsystem.c
@@ -56,9 +58,7 @@ add_library(core STATIC
 
     sha1/sha1.c
     tiny-AES-c/aes.c
-    xxhash/xxhash.c
-
-    MelonRipper.cpp)
+    xxhash/xxhash.c)
 
 if (ENABLE_OGLRENDERER)
     target_sources(core PRIVATE

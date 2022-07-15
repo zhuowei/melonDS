@@ -2611,14 +2611,14 @@ void VBlank()
 
             FlushRequest = 0;
 
-            MelonRipper::FlushRequest();
+            MelonRipper::NotifyFlushRequest();
         }
     }
 }
 
 void VCount215()
 {
-    MelonRipper::RenderFrame();
+    MelonRipper::NotifyRenderFrame();
 
     CurrentRenderer->RenderFrame();
 }
