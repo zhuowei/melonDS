@@ -38,8 +38,8 @@ jobs:
       shell: cmd
       working-directory: ${{runner.workspace}}/build
       run: |
-        mv melonDS.exe melonDS+MelonRipper.exe
-        7z a melonDS+MelonRipper.zip melonDS+MelonRipper.exe
+        mv melonDS.exe melonDS-MelonRipper.exe
+        7z a melonDS-MelonRipper.zip melonDS-MelonRipper.exe
 
     - name: Tag
       working-directory: ${{github.workspace}}
@@ -51,7 +51,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: ${{runner.workspace}}/build/melonDS+MelonRipper.zip
+        artifacts: ${{runner.workspace}}/build/melonDS-MelonRipper.zip
         body: >
           Automated build of the latest MelonRipper branch
           for use with https://github.com/scurest/MelonRipper.
