@@ -42,7 +42,10 @@
 #include "SPU.h"
 #include "Wifi.h"
 #include "NDSCart.h"
+#include "Platform.h"
 
+using Platform::Log;
+using Platform::LogLevel;
 
 #include "ARMJIT_x64/ARMJIT_Offsets.h"
 static_assert(offsetof(ARM, CPSR) == ARM_CPSR_offset, "");
@@ -53,7 +56,7 @@ namespace ARMJIT
 {
 
 #define JIT_DEBUGPRINT(msg, ...)
-//#define JIT_DEBUGPRINT(msg, ...) printf(msg, ## __VA_ARGS__)
+//#define JIT_DEBUGPRINT(msg, ...) Platform::Log(Platform::LogLevel::Debug, msg, ## __VA_ARGS__)
 
 Compiler* JITCompiler;
 
@@ -594,7 +597,7 @@ void CompileBlock(ARM* cpu)
     u32 localAddr = LocaliseCodeAddress(cpu->Num, blockAddr);
     if (!localAddr)
     {
-        printf("trying to compile non executable code? %x\n", blockAddr);
+        Log(LogLevel::Warn, "trying to compile non executable code? %x\n", blockAddr);
     }
 
     auto& map = cpu->Num == 0 ? JitBlocks9 : JitBlocks7;
@@ -764,7 +767,7 @@ void CompileBlock(ARM* cpu)
             u32 translatedAddr = LocaliseCodeAddress(cpu->Num, literalAddr);
             if (!translatedAddr)
             {
-                printf("literal in non executable memory?\n");
+                Log(LogLevel::Warn,"literal in non executable memory?\n");
             }
             if (InvalidLiterals.Find(translatedAddr) == -1)
             {
@@ -815,7 +818,7 @@ void CompileBlock(ARM* cpu)
                 {
                     for (int j = 0; j < i; j++)
                     {
-                        if (instrs[i].Addr == target)
+                        if (instrs[j].Addr == target)
                         {
                             isBackJump = true;
                             break;
@@ -1086,11 +1089,34 @@ void InvalidateByAddr(u32 localAddr)
 
 void CheckAndInvalidateITCM()
 {
-    for (u32 i = 0; i < ITCMPhysicalSize; i+=16)
+    for (u32 i = 0; i < ITCMPhysicalSize; i+=512)
     {
-        if (CodeIndexITCM[i / 512].Code & (1 << ((i & 0x1FF) / 16)))
+        if (CodeIndexITCM[i / 512].Code)
         {
-            InvalidateByAddr(i | (ARMJIT_Memory::memregion_ITCM << 27));
+            // maybe using bitscan would be better here?
+            // The thing is that in densely populated sets
+            // The old fashioned way can actually be faster
+            for (u32 j = 0; j < 512; j += 16)
+            {
+                if (CodeIndexITCM[i / 512].Code & (1 << ((j & 0x1FF) / 16)))
+                    InvalidateByAddr((i+j) | (ARMJIT_Memory::memregion_ITCM << 27));
+            }
+        }
+    }
+}
+
+void CheckAndInvalidateWVRAM(int bank)
+{
+    u32 start = bank == 1 ? 0x20000 : 0;
+    for (u32 i = start; i < start+0x20000; i+=512)
+    {
+        if (CodeIndexARM7WVRAM[i / 512].Code)
+        {
+            for (u32 j = 0; j < 512; j += 16)
+            {
+                if (CodeIndexARM7WVRAM[i / 512].Code & (1 << ((j & 0x1FF) / 16)))
+                    InvalidateByAddr((i+j) | (ARMJIT_Memory::memregion_VWRAM << 27));
+            }
         }
     }
 }
@@ -1152,7 +1178,7 @@ template void CheckAndInvalidate<1, ARMJIT_Memory::memregion_NewSharedWRAM_C>(u3
 
 void ResetBlockCache()
 {
-    printf("Resetting JIT block cache...\n");
+    Log(LogLevel::Debug, "Resetting JIT block cache...\n");
 
     // could be replace through a function which only resets
     // the permissions but we're too lazy

@@ -20,6 +20,8 @@
 #define ARMJIT_REGCACHE_H
 
 #include "ARMJIT.h"
+#include "ARMJIT_Internal.h"
+#include "Platform.h"
 
 // TODO: replace this in the future
 #include "dolphin/BitSet.h"
@@ -28,6 +30,9 @@
 
 namespace ARMJIT
 {
+    using Platform::Log;
+    using Platform::LogLevel;
+    // Imported inside the namespace so that other headers aren't polluted
 
 template <typename T, typename Reg>
 class RegisterCache
@@ -41,7 +46,7 @@ public:
     {
         for (int i = 0; i < 16; i++)
             Mapping[i] = (Reg)-1;
-        
+
         PCAllocatableAsSrc = ~(pcAllocatableAsSrc
             ? 0
             : (1 << 15));
@@ -79,7 +84,7 @@ public:
             }
         }
 
-        printf("this is a JIT bug! LoadRegister failed\n");
+        Log(LogLevel::Error, "this is a JIT bug! LoadRegister failed\n");
         abort();
     }
 

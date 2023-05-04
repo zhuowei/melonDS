@@ -24,6 +24,7 @@
 #include <SDL2/SDL.h>
 
 #include "Input.h"
+#include "Platform.h"
 
 class KeyMapButton : public QPushButton
 {
@@ -51,7 +52,7 @@ protected:
     {
         if (!isChecked()) return QPushButton::keyPressEvent(event);
 
-        printf("KEY PRESSED = %08X %08X | %08X %08X %08X\n", event->key(), (int)event->modifiers(), event->nativeVirtualKey(), event->nativeModifiers(), event->nativeScanCode());
+        Platform::Log(Platform::Debug, "KEY PRESSED = %08X %08X | %08X %08X %08X\n", event->key(), (int)event->modifiers(), event->nativeVirtualKey(), event->nativeModifiers(), event->nativeScanCode());
 
         int key = event->key();
         int mod = event->modifiers();
@@ -163,6 +164,7 @@ public:
 
         setCheckable(true);
         setText(mappingText());
+        setFocusPolicy(Qt::StrongFocus); //Fixes binding keys in macOS
 
         connect(this, &JoyMapButton::clicked, this, &JoyMapButton::onClick);
 

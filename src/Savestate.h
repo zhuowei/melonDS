@@ -23,13 +23,13 @@
 #include <stdio.h>
 #include "types.h"
 
-#define SAVESTATE_MAJOR 9
+#define SAVESTATE_MAJOR 10
 #define SAVESTATE_MINOR 0
 
 class Savestate
 {
 public:
-    Savestate(std::string filename, bool save);
+    Savestate(const std::string& filename, bool save);
     ~Savestate();
 
     bool Error;

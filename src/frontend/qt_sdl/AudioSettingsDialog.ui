@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>482</width>
-    <height>256</height>
+    <height>301</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,6 +23,13 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
+   <item>
+    <widget class="QLabel" name="lblInstanceNum">
+     <property name="text">
+      <string>Configuring settings for instance X</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -52,6 +59,16 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="1">
+        <widget class="QCheckBox" name="chkSyncDSiVolume">
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synchronizes the output volume with the DSi hardware volume.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Sync with DSi volume</string>
+         </property>
+        </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -76,7 +93,7 @@
       <item row="1" column="1">
        <widget class="QComboBox" name="cbBitrate">
         <property name="whatsThis">
-			<string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The bitrate of audio playback. If set to &quot;Automatic&quot; this will be 10-bit for DS mode and 16-bit for DSi mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The bitrate of audio playback. If set to &quot;Automatic&quot; this will be 10-bit for DS mode and 16-bit for DSi mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -171,6 +188,18 @@
    <header>QPathInput.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>cbInterpolation</tabstop>
+  <tabstop>cbBitrate</tabstop>
+  <tabstop>slVolume</tabstop>
+  <tabstop>chkSyncDSiVolume</tabstop>
+  <tabstop>rbMicNone</tabstop>
+  <tabstop>rbMicExternal</tabstop>
+  <tabstop>rbMicNoise</tabstop>
+  <tabstop>rbMicWav</tabstop>
+  <tabstop>txtMicWavPath</tabstop>
+  <tabstop>btnMicWavBrowse</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

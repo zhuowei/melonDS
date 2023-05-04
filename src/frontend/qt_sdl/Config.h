@@ -32,9 +32,13 @@ enum
     HK_FastForwardToggle,
     HK_FullscreenToggle,
     HK_SwapScreens,
+    HK_SwapScreenEmphasis,
     HK_SolarSensorDecrease,
     HK_SolarSensorIncrease,
     HK_FrameStep,
+    HK_PowerButton,
+    HK_VolumeUp,
+    HK_VolumeDown,
 
     // MelonRipper
     HK_RipFrame,
@@ -54,6 +58,15 @@ enum
     screenSizing_MAX,
 };
 
+enum
+{
+    micInputType_Silence,
+    micInputType_External,
+    micInputType_Noise,
+    micInputType_Wav,
+    micInputType_MAX,
+};
+
 namespace Config
 {
 
@@ -63,6 +76,15 @@ struct ConfigEntry
     int Type;           // 0=int 1=bool 2=string
     void* Value;        // pointer to the value variable
     std::variant<int, bool, std::string> Default;
+    bool InstanceUnique; // whether the setting can exist individually for each instance in multiplayer
+};
+
+struct CameraConfig
+{
+    int InputType; // 0=blank 1=image 2=camera
+    std::string ImagePath;
+    std::string CamDeviceName;
+    bool XFlip;
 };
 
 
@@ -146,9 +168,10 @@ extern int FirmwareBirthdayDay;
 extern int FirmwareFavouriteColour;
 extern std::string FirmwareMessage;
 extern std::string FirmwareMAC;
-extern bool RandomizeMAC;
 
-extern bool SocketBindAnyAddr;
+extern int MPAudioMode;
+extern int MPRecvTimeout;
+
 extern std::string LANDevice;
 extern bool DirectLAN;
 
@@ -157,10 +180,12 @@ extern bool SavestateRelocSRAM;
 extern int AudioInterp;
 extern int AudioBitrate;
 extern int AudioVolume;
+extern bool DSiVolumeSync;
 extern int MicInputType;
 extern std::string MicWavPath;
 
 extern std::string LastROMFolder;
+extern std::string LastBIOSFolder;
 
 extern std::string RecentROMList[10];
 
@@ -177,6 +202,8 @@ extern bool PauseLostFocus;
 extern bool DSBatteryLevelOkay;
 extern int DSiBatteryLevel;
 extern bool DSiBatteryCharging;
+
+extern CameraConfig Camera[2];
 
 
 void Load();

@@ -110,7 +110,7 @@ enum
     IRQ2_DSi_Unused3,
     IRQ2_DSi_GPIO33_0,
     IRQ2_DSi_Headphone,
-    IRQ2_DSi_PowerButton,
+    IRQ2_DSi_BPTWL,
     IRQ2_DSi_GPIO33_3, // "sound enable input"
     IRQ2_DSi_SDMMC,
     IRQ2_DSi_SD_Data1,
@@ -244,7 +244,7 @@ void EjectCart();
 bool CartInserted();
 
 bool NeedsDirectBoot();
-void SetupDirectBoot(std::string romname);
+void SetupDirectBoot(const std::string& romname);
 
 bool LoadGBACart(const u8* romdata, u32 romlen, const u8* savedata, u32 savelen);
 void LoadGBAAddon(int type);
@@ -260,9 +260,11 @@ void SetKeyMask(u32 mask);
 bool IsLidClosed();
 void SetLidClosed(bool closed);
 
+void CamInputFrame(int cam, u32* data, int width, int height, bool rgb);
 void MicInputFrame(s16* data, int samples);
 
 void ScheduleEvent(u32 id, bool periodic, s32 delay, void (*func)(u32), u32 param);
+void ScheduleEvent(u32 id, u64 timestamp, void (*func)(u32), u32 param);
 void CancelEvent(u32 id);
 
 void debug(u32 p);
