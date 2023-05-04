@@ -50,19 +50,8 @@ jobs:
     - name: Release
       uses: ncipollo/release-action@v1
       with:
-        allowUpdates: true
-        artifacts: ${{runner.workspace}}/build/melonDS-MelonRipper.zip
-        body: >
-          Automated build of the latest MelonRipper branch
-          for use with https://github.com/scurest/MelonRipper.
-          Windows 64-bit EXE.
-
-
-          NOTE:
-          This is *not* an official melonDS build.
-          It's based on an older melonDS release,
-          so it may have bugs the latest melonDS has fixed,
-          be incompatible with the latest melonDS's savestates,
-          etc.
         tag: MelonRipperBuild
+        artifacts: ${{runner.workspace}}/build/melonDS-MelonRipper.zip
+        allowUpdates: true
+        omitBodyDuringUpdate: true
         token: ${{ secrets.GITHUB_TOKEN }}
