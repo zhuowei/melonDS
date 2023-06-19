@@ -11,6 +11,11 @@ namespace MelonRipper {
 
 bool IsDumping;
 
+// zhuowei: memory
+
+bool g_melonripper_rip_to_memory;
+MelonRipperRipCallback g_melonripper_rip_callback;
+
 // Request for a (sequence of) rips.
 struct Request {
     unsigned num_frames_requested;
@@ -235,6 +240,11 @@ void MoveCurRipToPending()
 
 void WritePendingRip()
 {
+    // zhuowei: memory path
+    if (g_melonripper_rip_to_memory) {
+        g_melonripper_rip_callback(PendingRip.data.data(), PendingRip.data.size());
+        return;
+    }
     const char* filename = PendingRip.filename.c_str();
 
     bool ok = false;
