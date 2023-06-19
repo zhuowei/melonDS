@@ -47,7 +47,6 @@
 #include "NDSCart.h"
 #include "SPU.h"
 #include "Platform.h"
-#include "Config.h"
 
 #include <stdlib.h>
 
@@ -749,7 +748,7 @@ void Init()
     // The idea was to give the OS more freedom where to position the buffers,
     // but something was bad about this so instead we take this vmem eating monster
     // which seems to work better.
-    if (Config::JIT_FastMemory)
+    if (ARMJIT::FastMemory)
     {
         MemoryBase = (u8*)mmap(NULL, AddrSpaceSize*4, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
         munmap(MemoryBase, AddrSpaceSize*4);
