@@ -1225,7 +1225,8 @@ void ResetBlockCache()
 
 void JitEnableWrite()
 {
-    #if defined(__APPLE__) && defined(__aarch64__)
+    // zhuowei: hack
+    #if 0 && defined(__APPLE__) && defined(__aarch64__)
         if (__builtin_available(macOS 11.0, *))
             pthread_jit_write_protect_np(false);
     #endif
@@ -1233,7 +1234,8 @@ void JitEnableWrite()
 
 void JitEnableExecute()
 {
-    #if defined(__APPLE__) && defined(__aarch64__)
+    // zhuowei: hack
+    #if 0 && defined(__APPLE__) && defined(__aarch64__)
         if (__builtin_available(macOS 11.0, *))
             pthread_jit_write_protect_np(true);
     #endif
