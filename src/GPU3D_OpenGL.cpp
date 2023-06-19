@@ -1113,6 +1113,11 @@ void GLRenderer::RenderSceneChunk(int y, int h)
 
 void GLRenderer::RenderFrame()
 {
+    if (NDS::SkipFrame)
+    {
+        return;
+    }
+    
     CurShaderID = -1;
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

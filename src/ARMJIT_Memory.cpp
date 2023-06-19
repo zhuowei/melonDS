@@ -23,6 +23,7 @@
 #else
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -45,6 +46,8 @@
 #include "Wifi.h"
 #include "NDSCart.h"
 #include "SPU.h"
+#include "Platform.h"
+#include "Config.h"
 
 #include <stdlib.h>
 
@@ -746,11 +749,18 @@ void Init()
     // The idea was to give the OS more freedom where to position the buffers,
     // but something was bad about this so instead we take this vmem eating monster
     // which seems to work better.
-    MemoryBase = (u8*)mmap(NULL, AddrSpaceSize*4, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
-    munmap(MemoryBase, AddrSpaceSize*4);
-    FastMem9Start = MemoryBase;
-    FastMem7Start = MemoryBase + AddrSpaceSize;
-    MemoryBase = MemoryBase + AddrSpaceSize*2;
+    if (Config::JIT_FastMemory)
+    {
+        MemoryBase = (u8*)mmap(NULL, AddrSpaceSize*4, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+        munmap(MemoryBase, AddrSpaceSize*4);
+        FastMem9Start = MemoryBase;
+        FastMem7Start = MemoryBase + AddrSpaceSize;
+        MemoryBase = MemoryBase + AddrSpaceSize*2;
+    }
+    else
+    {
+        MemoryBase = (u8*)mmap(NULL, MemoryTotalSize, PROT_NONE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    }
 
 #if defined(__ANDROID__)
     static void* libandroid = dlopen("libandroid.so", RTLD_LAZY | RTLD_LOCAL);
@@ -769,6 +779,21 @@ void Init()
         ioctl(fd, ASHMEM_SET_SIZE, MemoryTotalSize);
         MemoryFile = fd;
     }
+#elif defined(__APPLE__)
+    #if TARGET_OS_IPHONE
+        MemoryFile = Platform::OpenLocalFile("melondsfastmem", "w+")->_file;
+        
+        char filepath[PATH_MAX];
+        if (fcntl(MemoryFile, F_GETPATH, filepath) != -1)
+        {
+            unlink(filepath);
+        }
+    #else
+        char* fastmemPidName = new char[snprintf(NULL, 0, "melondsfastmem%d", getpid()) + 1];
+        sprintf(fastmemPidName, "melondsfastmem%d", getpid());
+        MemoryFile = shm_open(fastmemPidName, O_RDWR|O_CREAT, 0600);
+        delete[] fastmemPidName;
+    #endif
 #else
     char fastmemPidName[snprintf(NULL, 0, "/melondsfastmem%d", getpid()) + 1];
     sprintf(fastmemPidName, "/melondsfastmem%d", getpid());
@@ -823,13 +848,24 @@ void DeInit()
 
     RemoveVectoredExceptionHandler(ExceptionHandlerHandle);
 #else
+    munmap(MemoryBase, MemoryTotalSize);
+    
     sigaction(SIGSEGV, &OldSaSegv, nullptr);
 #ifdef __APPLE__
     sigaction(SIGBUS, &OldSaBus, nullptr);
 #endif
-
-    munmap(MemoryBase, MemoryTotalSize);
-    close(MemoryFile);
+    
+    #if defined(__APPLE__)
+        #if TARGET_OS_IPHONE
+            close(MemoryFile);
+        #else
+            char* fastmemPidName = new char[snprintf(NULL, 0, "melondsfastmem%d", getpid()) + 1];
+            sprintf(fastmemPidName, "melondsfastmem%d", getpid());
+            shm_unlink(fastmemPidName);
+            delete[] fastmemPidName;
+        #endif
+    #endif
+    
 #endif
 }
 

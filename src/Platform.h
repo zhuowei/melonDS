@@ -199,6 +199,8 @@ void Camera_Start(int num);
 void Camera_Stop(int num);
 void Camera_CaptureFrame(int num, u32* frame, int width, int height, bool yuv);
 
+void Mic_Prepare();
+
 }
 
 #endif // PLATFORM_H

@@ -18,6 +18,7 @@
 
 #include "GPU2D_Soft.h"
 #include "GPU.h"
+#include "NDS.h"
 
 namespace GPU2D
 {
@@ -163,6 +164,11 @@ u32 SoftRenderer::ColorComposite(int i, u32 val1, u32 val2)
 
 void SoftRenderer::DrawScanline(u32 line, Unit* unit)
 {
+    if (NDS::SkipFrame)
+    {
+        return;
+    }
+
     CurUnit = unit;
 
     int stride = GPU3D::CurrentRenderer->Accelerated ? (256*3 + 1) : 256;

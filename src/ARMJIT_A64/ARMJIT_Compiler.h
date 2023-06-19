@@ -27,6 +27,10 @@
 #include "../ARMJIT_Internal.h"
 #include "../ARMJIT_RegisterCache.h"
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 #include <unordered_map>
 
 namespace ARMJIT
@@ -268,7 +272,7 @@ public:
 
     bool IrregularCycles = false;
 
-#ifdef __SWITCH__
+#if defined(__SWITCH__) || (defined(__APPLE__) && TARGET_OS_IPHONE)
     void* JitRWBase;
     void* JitRWStart;
     void* JitRXStart;

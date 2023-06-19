@@ -34,6 +34,10 @@ extern char __start__;
 
 #include <stdlib.h>
 
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
+
 using namespace Arm64Gen;
 
 extern "C" void ARM_Ret();
@@ -256,6 +260,25 @@ Compiler::Compiler()
     virtmemUnlock();
 
     SetCodeBase((u8*)JitRWStart, (u8*)JitRXStart);
+    JitMemMainSize = JitMemSize;
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
+    vm_address_t baseAddress = NULL;
+    vm_allocate(mach_task_self(), &baseAddress, JitMemSize * 2, VM_FLAGS_ANYWHERE);
+    
+    vm_address_t virtualAddress = baseAddress + JitMemSize;
+    vm_deallocate(mach_task_self(), virtualAddress, JitMemSize);
+    
+    vm_prot_t current_protection = 0;
+    vm_prot_t max_protection = 0;
+    vm_remap(mach_task_self(), &virtualAddress, JitMemSize, 0, 0, mach_task_self(), baseAddress, 0, &current_protection, &max_protection, VM_INHERIT_DEFAULT);
+
+    vm_address_t rwAddress = baseAddress;
+    mprotect((void *)rwAddress, JitMemSize, PROT_READ | PROT_WRITE);
+    
+    vm_address_t rxAddress = virtualAddress;
+    mprotect((void *)rxAddress, JitMemSize, Config::JIT_Enable ? PROT_EXEC : PROT_READ);
+    
+    SetCodeBase((u8 *)rwAddress, (u8 *)rxAddress);
     JitMemMainSize = JitMemSize;
 #else
     #ifdef _WIN32
